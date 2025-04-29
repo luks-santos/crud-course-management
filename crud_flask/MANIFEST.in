@@ -1,0 +1,4 @@
+include crud_flask/schema.sql
+graft crud_flask/static
+graft crud_flask/templates
+global-exclude *.pyc

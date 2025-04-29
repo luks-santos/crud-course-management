@@ -1,0 +1,16 @@
+[project]
+name = "crud_flask"
+version = "1.0.0"
+description = "Flask Crud Application"
+dependencies = [
+    "flask",
+    "flask-sqlalchemy",
+    "flask-migrate"
+]
+
+[tool.setuptools]
+packages = ["crud_flask"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
