@@ -14,7 +14,7 @@ import {
 	Select,
 	Stack,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Category } from '../interfaces/category.enum';
 import { Course } from '../interfaces/course';
@@ -38,6 +38,22 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 		lessons: [emptyLesson],
 	});
 
+	useEffect(() => {
+		if (initialData) {
+			setFormData({
+				id: initialData.id,
+				name: initialData.name,
+				category: initialData.category,
+				status: initialData.status,
+				lessons: initialData.lessons.map((lesson) => ({
+					id: lesson.id,
+					name: lesson.name,
+					youtube_url: lesson.youtube_url,
+				})),
+			});
+		}
+	}, [initialData]);
+
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
 		setFormData((prevData) => ({
@@ -58,9 +74,12 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 	};
 
 	const addLesson = () => {
+		const newLesson = { ...emptyLesson };
+		emptyLesson.name = '';
+		emptyLesson.youtube_url = '';
 		setFormData((prevData) => ({
 			...prevData,
-			lessons: [...prevData.lessons, emptyLesson],
+			lessons: [...prevData.lessons, newLesson],
 		}));
 	};
 

@@ -1,4 +1,5 @@
 import CourseCreate from '../../pages/CourseCreate';
+import CourseEdit from '../../pages/CourseEdit';
 import CourseList from '../../pages/CourseList';
 
 interface RouteProps {
@@ -9,6 +10,7 @@ interface RouteProps {
 const routesList: RouteProps[] = [
 	{ path: '/', element: CourseList },
 	{ path: '/course/create', element: CourseCreate },
+	{ path: '/course/:id', element: CourseEdit },
 ];
 
 export default routesList;

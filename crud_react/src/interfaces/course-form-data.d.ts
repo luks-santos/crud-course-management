@@ -3,6 +3,7 @@ import { Lesson } from "./lesson";
 import { Status } from "./status.enum";
 
 export interface CourseFormData {
+  id?: number;
   name: string;
   category: Category;
   status: Status;

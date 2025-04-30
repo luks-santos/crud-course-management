@@ -1,5 +1,5 @@
 import { AddIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex } from '@chakra-ui/react';
+import { Box, Button, Card, CardBody, Flex } from '@chakra-ui/react';
 import { useNavigate } from 'react-router';
 import CourseTable from '../components/CourseTable';
 import Layout from '../components/Layout';
@@ -8,7 +8,15 @@ import { Course } from '../interfaces/course';
 
 const CourseList = () => {
 	const navigate = useNavigate();
-	const { data: courses, loading } = useHttp<Course[]>(`${import.meta.env.VITE_API_URL}/courses`, 'GET');
+	const { data: courses, loading, sendRequest } = useHttp<Course[]>(`${import.meta.env.VITE_API_URL}/courses`, 'GET');
+
+	const handleUpdateTable = async () => {
+		try {
+			await sendRequest();
+		} catch (error) {
+			console.error('Error fetching courses:', error);
+		}
+	};
 
 	const handleAddCourse = () => {
 		navigate('/course/create');
@@ -30,10 +38,15 @@ const CourseList = () => {
 				</Box>
 			</Flex>
 
-			<CourseTable
-				courses={courses}
-				isLoading={loading}
-			/>
+			<Card>
+				<CardBody>
+					<CourseTable
+						courses={courses}
+						isLoading={loading}
+						onUpdateTable={handleUpdateTable}
+					/>
+				</CardBody>
+			</Card>
 		</Layout>
 	);
 };
