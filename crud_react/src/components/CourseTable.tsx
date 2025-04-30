@@ -1,5 +1,8 @@
-import { Flex, Heading, Spinner, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
+import { Badge, Flex, Heading, IconButton, Spinner, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import { Category } from '../interfaces/category.enum';
 import { Course } from '../interfaces/course';
+import { Status } from '../interfaces/status.enum';
 
 interface CourseTableProps {
 	courses: Course[] | null;
@@ -33,30 +36,61 @@ const CourseTable = ({ courses, isLoading }: CourseTableProps) => {
 		);
 	}
 
+	const getCategoryColor = (category: Category) => {
+		switch (category) {
+			case Category.FRONTEND:
+				return 'blue';
+			case Category.BACKEND:
+				return 'green';
+			case Category.FULLSTACK:
+				return 'purple';
+			default:
+				return 'gray';
+		}
+	};
+
+	const getStatusColor = (status: Status) => {
+		return status === Status.ACTIVE ? 'green' : 'red';
+	};
+
 	return (
 		<TableContainer>
 			<Table size='md'>
 				<Thead>
 					<Tr>
-						<Th>Nome</Th>
-						<Th>Categoria</Th>
+						<Th>Name</Th>
+						<Th>Category</Th>
 						<Th>Status</Th>
-						<Th>Lições</Th>
-						<Th textAlign={'right'}>Ações</Th>
+						<Th>Lessons</Th>
+						<Th textAlign={'right'}>Actions</Th>
 					</Tr>
 				</Thead>
 				<Tbody>
 					{courses.map((course) => (
 						<Tr key={course.id}>
 							<Td>{course.name}</Td>
-							<Td>{course.category}</Td>
-							<Td>{course.status}</Td>
+							<Td>
+								<Badge colorScheme={getCategoryColor(course.category)}>{course.category}</Badge>
+							</Td>
+							<Td>
+								<Badge colorScheme={getStatusColor(course.status)}>{course.status}</Badge>
+							</Td>
 							<Td>{course.lessons.length}</Td>
-							{/* <Td textAlign={'right'}>
-								<Button colorScheme='blue' size='sm'>
-									Editar
-								</Button>
-							</Td> */}
+							<Td textAlign={'right'}>
+								<IconButton
+									onClick={() => null}
+									aria-label='Edit course'
+									icon={<EditIcon />}
+									color={'blue.500'}
+								/>
+								<IconButton
+									onClick={() => null}
+									aria-label='Delete course'
+									icon={<DeleteIcon />}
+									color={'red.500'}
+									ml={2}
+								/>
+							</Td>
 						</Tr>
 					))}
 				</Tbody>

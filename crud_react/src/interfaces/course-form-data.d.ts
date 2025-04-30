@@ -2,8 +2,7 @@ import { Category } from "./category.enum";
 import { Lesson } from "./lesson";
 import { Status } from "./status.enum";
 
-export interface Course {
-  id?: number;
+export interface CourseFormData {
   name: string;
   category: Category;
   status: Status;

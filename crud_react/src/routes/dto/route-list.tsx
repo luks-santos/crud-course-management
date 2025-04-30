@@ -1,3 +1,4 @@
+import CourseCreate from '../../pages/CourseCreate';
 import CourseList from '../../pages/CourseList';
 
 interface RouteProps {
@@ -5,6 +6,9 @@ interface RouteProps {
 	element: React.FC;
 }
 
-const routesList: RouteProps[] = [{ path: '/', element: CourseList }];
+const routesList: RouteProps[] = [
+	{ path: '/', element: CourseList },
+	{ path: '/course/create', element: CourseCreate },
+];
 
 export default routesList;
