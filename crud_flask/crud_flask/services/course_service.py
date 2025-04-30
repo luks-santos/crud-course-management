@@ -19,6 +19,14 @@ class CourseService:
             category=Category[data["category"]],
             status=Status[data.get("status", "ACTIVE")],
         )
+        
+        for lesson_data in data["lessons"]:
+            lesson = Lesson(
+                name=lesson_data["name"],
+                youtube_url=lesson_data["youtube_url"],
+                course=course,
+            )
+            course.lessons.append(lesson)
 
         db.session.add(course)
         db.session.commit()
