@@ -1,17 +1,26 @@
-import Courses from '../../pages/Courses';
-import CoursesList from '../../pages/CoursesList';
+import { Navigate } from 'react-router';
+import CoursesPage from '../../pages/courses';
+import CoursesListPage from '../../pages/courses-list';
 
 interface RouteProps {
 	path: string;
-	element: React.FC;
+	element: React.ReactNode;
 }
 
 const routesList: RouteProps[] = [
-	{ path: '/course', element: CoursesList },
-	{ path: '/course/create', element: Courses },
-	{ path: '/course/:id', element: Courses },
+	{ path: '/courses', element: <CoursesListPage /> },
+	{ path: '/courses/create', element: <CoursesPage /> },
+	{ path: '/courses/:id/edit', element: <CoursesPage /> },
 
-	{ path: '*', element: CoursesList },
+	{
+		path: '*',
+		element: (
+			<Navigate
+				to='/courses'
+				replace
+			/>
+		),
+	},
 ];
 
 export default routesList;

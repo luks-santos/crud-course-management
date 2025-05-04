@@ -1,4 +1,4 @@
-import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
+import { DeleteIcon, EditIcon, ViewIcon } from '@chakra-ui/icons';
 import {
 	Badge,
 	Flex,
@@ -16,11 +16,11 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import useHttp from '../hooks/useHttp';
-import { Category } from '../models/enums/category.enum';
-import { Status } from '../models/enums/status.enum';
-import { Course } from '../models/interfaces/course';
-import ModalDelete from './ModalDelete';
+import useHttp from '../../hooks/utils/useHttp';
+import { Category } from '../../models/enums/category.enum';
+import { Status } from '../../models/enums/status.enum';
+import { Course } from '../../models/interfaces/course';
+import ModalDeleteConfirm from '../../shared/modal-delete-confirm';
 
 interface CourseTableProps {
 	courses: Course[] | null;
@@ -28,10 +28,10 @@ interface CourseTableProps {
 	onUpdateTable: () => void;
 }
 
-const CourseTable = ({ courses, isLoading, onUpdateTable }: CourseTableProps) => {
+const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTableProps) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [courseDeleteId, setCourseDeleteId] = useState<number | null>(null);
-	const { sendRequest } = useHttp<Course>(`${import.meta.env.VITE_API_URL}/courses/${courseDeleteId}`, 'DELETE', null, [], false);
+	const { sendRequest, loading } = useHttp<Course>(`${import.meta.env.VITE_API_URL}/courses/${courseDeleteId}`, 'DELETE', null, [], false);
 	const navigate = useNavigate();
 
 	const handleDelete = (courseId: number) => {
@@ -57,10 +57,12 @@ const CourseTable = ({ courses, isLoading, onUpdateTable }: CourseTableProps) =>
 			<Flex
 				justify='center'
 				align='center'
-				py={10}>
+				py={10}
+			>
 				<Heading
 					size='lg'
-					color='gray.500'>
+					color='gray.500'
+				>
 					No courses found
 				</Heading>
 			</Flex>
@@ -72,7 +74,8 @@ const CourseTable = ({ courses, isLoading, onUpdateTable }: CourseTableProps) =>
 			<Flex
 				justify='center'
 				align='center'
-				py={10}>
+				py={10}
+			>
 				<Spinner size='xl' />
 			</Flex>
 		);
@@ -121,17 +124,23 @@ const CourseTable = ({ courses, isLoading, onUpdateTable }: CourseTableProps) =>
 								<Td>{course.lessons.length}</Td>
 								<Td textAlign={'right'}>
 									<IconButton
-										onClick={() => navigate(`/course/${course.id}`)}
+										onClick={() => navigate(``)}
+										aria-label='View course'
+										icon={<ViewIcon />}
+										color={'blue.500'}
+									/>
+									<IconButton
+										onClick={() => navigate(`/courses/${course.id}/edit`)}
 										aria-label='Edit course'
 										icon={<EditIcon />}
 										color={'blue.500'}
+										mx={2}
 									/>
 									<IconButton
 										onClick={() => handleDelete(course.id!)}
 										aria-label='Delete course'
 										icon={<DeleteIcon />}
 										color={'red.500'}
-										ml={2}
 									/>
 								</Td>
 							</Tr>
@@ -139,14 +148,16 @@ const CourseTable = ({ courses, isLoading, onUpdateTable }: CourseTableProps) =>
 					</Tbody>
 				</Table>
 			</TableContainer>
-			<ModalDelete
+			<ModalDeleteConfirm
 				isOpen={isOpen}
 				onClose={onClose}
 				onConfirm={confirmDelete}
-				data={{ title: 'Delete Course', description: 'Are you sure you want to delete this course?' }}
+				title='Delete Course'
+				message='Are you sure you want to delete this course? This action cannot be undone.'
+				isLoading={loading}
 			/>
 		</>
 	);
 };
 
-export default CourseTable;
+export default CourseTableComponent;

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import CourseForm from '../components/CourseForm';
-import Layout from '../components/Layout';
-import useHttp from '../hooks/useHttp';
-import { Course } from '../models/interfaces/course';
+import CourseFormComponent from '../../components/course-form';
+import useHttp from '../../hooks/utils/useHttp';
+import { Course } from '../../models/interfaces/course';
+import Layout from '../../shared/layout';
 
-const Courses = () => {
+const CoursesPage = () => {
 	const navigate = useNavigate();
 	const { id } = useParams();
 	const { data } = useHttp<Course>(id ? `${import.meta.env.VITE_API_URL}/courses/${id}` : '', 'GET', null, [id], !!id);
@@ -30,12 +30,13 @@ const Courses = () => {
 
 	return (
 		<Layout>
-			<CourseForm
+			<CourseFormComponent
 				initialData={data!}
 				onSubmit={handleSubmit}
-				isLoading={loading}></CourseForm>
+				isLoading={loading}
+			></CourseFormComponent>
 		</Layout>
 	);
 };
 
-export default Courses;
+export default CoursesPage;

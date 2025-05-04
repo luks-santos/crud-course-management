@@ -1,25 +1,12 @@
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
-import {
-	Box,
-	Button,
-	Card,
-	CardBody,
-	Divider,
-	FormControl,
-	FormLabel,
-	Heading,
-	HStack,
-	IconButton,
-	Input,
-	Select,
-	Stack,
-} from '@chakra-ui/react';
+import { Box, Button, Card, CardBody, Divider, FormControl, FormLabel, Heading, HStack, IconButton, Select, Stack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Category } from '../models/enums/category.enum';
-import { Status } from '../models/enums/status.enum';
-import { Course } from '../models/interfaces/course';
-import { CourseFormData } from '../models/interfaces/course-form-data';
+import { Category } from '../../models/enums/category.enum';
+import { Status } from '../../models/enums/status.enum';
+import { Course } from '../../models/interfaces/course';
+import { CourseFormData } from '../../models/interfaces/course-form-data';
+import InputComponent from '../../shared/input';
 
 const emptyLesson = { name: '', youtube_url: '' };
 
@@ -29,7 +16,7 @@ interface CourseFormProps {
 	isLoading: boolean;
 }
 
-const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
+const CourseFormComponent = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 	const navigate = useNavigate();
 	const [formData, setFormData] = useState<CourseFormData>({
 		name: '',
@@ -54,7 +41,7 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 		}
 	}, [initialData]);
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+	const handCourseChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
 		setFormData((prevData) => ({
 			...prevData,
@@ -103,28 +90,28 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 				<CardBody>
 					<Stack spacing={6}>
 						<Stack spacing={4}>
-							<FormControl isRequired>
-								<FormLabel>Course name</FormLabel>
-								<Input
-									value={formData.name}
-									onChange={handleInputChange}
-									name='name'
-									placeholder='Course name'
-									type='text'
-								/>
-							</FormControl>
+							<InputComponent
+								name='name'
+								label='Course Name'
+								value={formData.name}
+								handleOnChangeValue={handCourseChange}
+								type='text'
+								isRequired
+							/>
 
 							<FormControl isRequired>
 								<FormLabel>Category</FormLabel>
 								<Select
 									value={formData.category}
-									onChange={handleInputChange}
+									onChange={handCourseChange}
 									name='category'
-									placeholder='Select option'>
+									placeholder='Select option'
+								>
 									{Object.values(Category).map((category) => (
 										<option
 											key={category}
-											value={category}>
+											value={category}
+										>
 											{category}
 										</option>
 									))}
@@ -135,13 +122,15 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 								<FormLabel>Status</FormLabel>
 								<Select
 									value={formData.status}
-									onChange={handleInputChange}
+									onChange={handCourseChange}
 									name='status'
-									placeholder='Select option'>
+									placeholder='Select option'
+								>
 									{Object.values(Status).map((status) => (
 										<option
 											key={status}
-											value={status}>
+											value={status}
+										>
 											{status}
 										</option>
 									))}
@@ -154,39 +143,30 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 						<Box>
 							<Heading
 								size='md'
-								mb={2}>
+								mb={2}
+							>
 								Lessons
 							</Heading>
 
 							{formData.lessons.map((lesson, index) => (
 								<Box key={index}>
 									<Stack>
-										<FormControl
+										<InputComponent
+											name={`lesson-${index}-name`}
+											label='Lesson Name'
+											value={lesson.name}
+											handleOnChangeValue={(e) => handleLessonChange(index, 'name', e.target.value)}
+											type='text'
 											isRequired
-											mb={2}>
-											<FormLabel>Lesson name</FormLabel>
-											<Input
-												value={lesson.name}
-												onChange={(e) => handleLessonChange(index, 'name', e.target.value)}
-												name='name'
-												placeholder='Lesson name'
-												type='text'
-											/>
-										</FormControl>
-
-										<FormControl
+										/>
+										<InputComponent
+											name={`lesson-${index}-youtube_url`}
+											label='YouTube URL'
+											value={lesson.youtube_url}
+											handleOnChangeValue={(e) => handleLessonChange(index, 'youtube_url', e.target.value)}
+											type='text'
 											isRequired
-											mb={2}>
-											<FormLabel>YouTube URL</FormLabel>
-											<Input
-												value={lesson.youtube_url}
-												onChange={(e) => handleLessonChange(index, 'youtube_url', e.target.value)}
-												name='youtube_url'
-												placeholder='YouTube URL'
-												type='text'
-											/>
-										</FormControl>
-
+										/>
 										{formData.lessons.length > 1 && (
 											<Box textAlign='right'>
 												<IconButton
@@ -207,24 +187,28 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 								colorScheme='blue'
 								variant='outline'
 								size='sm'
-								mb={6}>
+								my={1}
+							>
 								Add Lesson
 							</Button>
 						</Box>
 
 						<HStack
 							justifyContent='flex-end'
-							spacing={4}>
+							spacing={4}
+						>
 							<Button
 								variant='outline'
-								onClick={() => navigate('/')}>
+								onClick={() => navigate('/')}
+							>
 								Cancel
 							</Button>
 							<Button
 								type='submit'
 								colorScheme='blue'
 								isLoading={isLoading}
-								loadingText='Saving...'>
+								loadingText='Saving...'
+							>
 								Save
 							</Button>
 						</HStack>
@@ -235,4 +219,4 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 	);
 };
 
-export default CourseForm;
+export default CourseFormComponent;

@@ -1,12 +1,12 @@
 import { AddIcon } from '@chakra-ui/icons';
 import { Box, Button, Card, CardBody, Flex } from '@chakra-ui/react';
 import { useNavigate } from 'react-router';
-import CourseTable from '../components/CourseTable';
-import Layout from '../components/Layout';
-import useHttp from '../hooks/useHttp';
-import { Course } from '../models/interfaces/course';
+import CourseTableComponent from '../../components/course-table';
+import useHttp from '../../hooks/utils/useHttp';
+import { Course } from '../../models/interfaces/course';
+import Layout from '../../shared/layout';
 
-const CoursesList = () => {
+const CoursesListPage = () => {
 	const navigate = useNavigate();
 	const { data: courses, loading, sendRequest } = useHttp<Course[]>(`${import.meta.env.VITE_API_URL}/courses`, 'GET');
 
@@ -19,7 +19,7 @@ const CoursesList = () => {
 	};
 
 	const handleAddCourse = () => {
-		navigate('/course/create');
+		navigate('/courses/create');
 	};
 
 	return (
@@ -27,12 +27,14 @@ const CoursesList = () => {
 			<Flex
 				justify='end'
 				align='center'
-				mb={6}>
+				mb={2}
+			>
 				<Box>
 					<Button
 						onClick={handleAddCourse}
 						leftIcon={<AddIcon />}
-						colorScheme='blue'>
+						colorScheme='blue'
+					>
 						Add Course
 					</Button>
 				</Box>
@@ -40,7 +42,7 @@ const CoursesList = () => {
 
 			<Card>
 				<CardBody>
-					<CourseTable
+					<CourseTableComponent
 						courses={courses}
 						isLoading={loading}
 						onUpdateTable={handleUpdateTable}
@@ -51,4 +53,4 @@ const CoursesList = () => {
 	);
 };
 
-export default CoursesList;
+export default CoursesListPage;
