@@ -1,8 +1,6 @@
-from typing import Dict, List, Any, Tuple, Union
+from typing import Tuple
 from flask import Blueprint, request, jsonify, Response
-from ..services.course_service import CourseService
-from ..models import db, Category, Status
-
+from ..services.course_service import CourseService 
 
 bp = Blueprint("courses", __name__, url_prefix="/api/courses")
 
@@ -73,7 +71,6 @@ def create_course() -> Tuple[Response, int]:
         return jsonify(response_data), 201
 
     except Exception as e:
-        db.session.rollback()
         return jsonify({"error": str(e)}), 400
 
 
@@ -101,7 +98,6 @@ def update_course(id: int) -> Response:
         return jsonify(response_data)
 
     except Exception as e:
-        db.session.rollback()
         return jsonify({"error": str(e)}), 400
 
 
@@ -109,8 +105,7 @@ def update_course(id: int) -> Response:
 def delete_course(id: int) -> Tuple[Response, int]:
     try:
         CourseService.delete(id)
-        return jsonify({"message": "Curso excluído com sucesso"}), 200
+        return jsonify({"message": "Course deleted"}), 200
 
     except Exception as e:
-        db.session.rollback()
         return jsonify({"error": str(e)}), 400

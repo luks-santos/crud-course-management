@@ -1,9 +1,9 @@
 import os
 from flask import Flask
 from flask_cors import CORS
-from .models import db
 from flask_migrate import Migrate
 from .routes import bp as api_bp
+from .models.models import db
 
 app = Flask(__name__)
 
