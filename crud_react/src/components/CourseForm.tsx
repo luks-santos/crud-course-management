@@ -16,10 +16,10 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Category } from '../interfaces/category.enum';
-import { Course } from '../interfaces/course';
-import { CourseFormData } from '../interfaces/course-form-data';
-import { Status } from '../interfaces/status.enum';
+import { Category } from '../models/enums/category.enum';
+import { Status } from '../models/enums/status.enum';
+import { Course } from '../models/interfaces/course';
+import { CourseFormData } from '../models/interfaces/course-form-data';
 
 const emptyLesson = { name: '', youtube_url: '' };
 
@@ -103,7 +103,7 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 				<CardBody>
 					<Stack spacing={6}>
 						<Stack spacing={4}>
-							<FormControl>
+							<FormControl isRequired>
 								<FormLabel>Course name</FormLabel>
 								<Input
 									value={formData.name}
@@ -114,7 +114,7 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 								/>
 							</FormControl>
 
-							<FormControl>
+							<FormControl isRequired>
 								<FormLabel>Category</FormLabel>
 								<Select
 									value={formData.category}
@@ -131,7 +131,7 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 								</Select>
 							</FormControl>
 
-							<FormControl>
+							<FormControl isRequired>
 								<FormLabel>Status</FormLabel>
 								<Select
 									value={formData.status}
@@ -161,7 +161,9 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 							{formData.lessons.map((lesson, index) => (
 								<Box key={index}>
 									<Stack>
-										<FormControl mb={2}>
+										<FormControl
+											isRequired
+											mb={2}>
 											<FormLabel>Lesson name</FormLabel>
 											<Input
 												value={lesson.name}
@@ -172,7 +174,9 @@ const CourseForm = ({ initialData, onSubmit, isLoading }: CourseFormProps) => {
 											/>
 										</FormControl>
 
-										<FormControl mb={2}>
+										<FormControl
+											isRequired
+											mb={2}>
 											<FormLabel>YouTube URL</FormLabel>
 											<Input
 												value={lesson.youtube_url}

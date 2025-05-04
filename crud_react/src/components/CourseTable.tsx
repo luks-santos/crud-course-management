@@ -17,9 +17,9 @@ import {
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import useHttp from '../hooks/useHttp';
-import { Category } from '../interfaces/category.enum';
-import { Course } from '../interfaces/course';
-import { Status } from '../interfaces/status.enum';
+import { Category } from '../models/enums/category.enum';
+import { Status } from '../models/enums/status.enum';
+import { Course } from '../models/interfaces/course';
 import ModalDelete from './ModalDelete';
 
 interface CourseTableProps {

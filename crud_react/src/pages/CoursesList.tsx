@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router';
 import CourseTable from '../components/CourseTable';
 import Layout from '../components/Layout';
 import useHttp from '../hooks/useHttp';
-import { Course } from '../interfaces/course';
+import { Course } from '../models/interfaces/course';
 
-const CourseList = () => {
+const CoursesList = () => {
 	const navigate = useNavigate();
 	const { data: courses, loading, sendRequest } = useHttp<Course[]>(`${import.meta.env.VITE_API_URL}/courses`, 'GET');
 
@@ -51,4 +51,4 @@ const CourseList = () => {
 	);
 };
 
-export default CourseList;
+export default CoursesList;

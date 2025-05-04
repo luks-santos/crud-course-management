@@ -1,6 +1,6 @@
-import { Category } from "./category.enum";
+import { Category } from "../enums/category.enum";
+import { Status } from "../enums/status.enum";
 import { Lesson } from "./lesson";
-import { Status } from "./status.enum";
 
 export interface CourseFormData {
   id?: number;
