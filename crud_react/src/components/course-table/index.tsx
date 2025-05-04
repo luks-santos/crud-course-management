@@ -17,7 +17,6 @@ import {
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import useHttp from '../../hooks/utils/useHttp';
-import { Category } from '../../models/enums/category.enum';
 import { Status } from '../../models/enums/status.enum';
 import { Course } from '../../models/interfaces/course';
 import ModalDeleteConfirm from '../../shared/modal-delete-confirm';
@@ -81,23 +80,15 @@ const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTable
 		);
 	}
 
-	const getCategoryColor = (category: Category) => {
-		switch (category) {
-			case Category.FRONTEND:
-				return 'blue';
-			case Category.BACKEND:
-				return 'green';
-			case Category.FULLSTACK:
-				return 'purple';
-			default:
-				return 'gray';
-		}
-	};
-
 	const getStatusColor = (status: Status) => {
 		return status === Status.ACTIVE ? 'green' : 'red';
 	};
 
+	const handleViewCourse = (course: Course) => {
+		navigate(`/courses/${course.id}`, {
+			state: { course },
+		});
+	};
 	return (
 		<>
 			<TableContainer>
@@ -116,7 +107,7 @@ const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTable
 							<Tr key={course.id}>
 								<Td>{course.name}</Td>
 								<Td>
-									<Badge colorScheme={getCategoryColor(course.category)}>{course.category}</Badge>
+									<Badge>{course.category}</Badge>
 								</Td>
 								<Td>
 									<Badge colorScheme={getStatusColor(course.status)}>{course.status}</Badge>
@@ -124,7 +115,7 @@ const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTable
 								<Td>{course.lessons.length}</Td>
 								<Td textAlign={'right'}>
 									<IconButton
-										onClick={() => navigate(``)}
+										onClick={() => handleViewCourse(course)}
 										aria-label='View course'
 										icon={<ViewIcon />}
 										color={'blue.500'}

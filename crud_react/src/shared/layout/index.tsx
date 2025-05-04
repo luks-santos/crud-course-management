@@ -29,7 +29,7 @@ const Layout = ({ children }: LayoutProps) => {
 				</Container>
 			</Box>
 			<Container
-				maxW='container.xl'
+				maxW='container'
 				py={1}
 			>
 				<Flex direction='column'>{children}</Flex>
