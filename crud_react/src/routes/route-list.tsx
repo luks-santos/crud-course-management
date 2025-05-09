@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router';
-import CoursesPage from '../../pages/courses';
-import CoursesListPage from '../../pages/courses-list';
-import CoursesViewPage from '../../pages/courses-view';
-import LessonViewPage from '../../pages/lessons-view';
+import CoursesPage from '../pages/courses';
+import CoursesListPage from '../pages/courses-list';
+import CoursesViewPage from '../pages/courses-view';
+import LessonViewPage from '../pages/lessons-view';
 
 interface RouteProps {
 	path: string;

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import CourseTableComponent from '../../components/course-table';
 import useHttp from '../../hooks/utils/useHttp';
 import { Course } from '../../models/interfaces/course';
-import Layout from '../../shared/layout';
+import Layout from '../../templates/layout';
 
 const CoursesListPage = () => {
 	const navigate = useNavigate();

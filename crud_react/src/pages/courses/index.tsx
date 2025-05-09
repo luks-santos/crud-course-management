@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import CourseFormComponent from '../../components/course-form';
 import useHttp from '../../hooks/utils/useHttp';
 import { Course } from '../../models/interfaces/course';
-import Layout from '../../shared/layout';
+import Layout from '../../templates/layout';
 
 const CoursesPage = () => {
 	const navigate = useNavigate();
@@ -24,7 +24,7 @@ const CoursesPage = () => {
 			throw error;
 		} finally {
 			setLoading(false);
-			navigate('/');
+			// navigate('/');
 		}
 	};
 

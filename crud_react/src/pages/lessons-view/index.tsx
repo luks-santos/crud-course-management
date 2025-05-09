@@ -3,7 +3,7 @@ import { Box, Flex, Grid, GridItem, Text } from '@chakra-ui/layout';
 import { Button, Heading } from '@chakra-ui/react';
 import { useLocation, useNavigate } from 'react-router';
 import { Lesson } from '../../models/interfaces/lesson';
-import Layout from '../../shared/layout';
+import Layout from '../../templates/layout';
 
 const LessonViewPage = () => {
 	const navigate = useNavigate();
