@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router';
-import routesList from './dto/route-list';
+import routesList from './route-list';
 
 const AppRoutes = () => {
 	return (

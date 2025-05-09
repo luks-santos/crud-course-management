@@ -5,6 +5,7 @@ import { Lesson } from "./lesson";
 export interface CourseFormData {
   id?: number;
   name: string;
+  description?: string;
   category: Category;
   status: Status;
   lessons: Lesson[];

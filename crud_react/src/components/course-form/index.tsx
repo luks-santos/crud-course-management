@@ -1,12 +1,31 @@
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
-import { Box, Button, Card, CardBody, Divider, FormControl, FormLabel, Heading, HStack, IconButton, Select, Stack } from '@chakra-ui/react';
+import { Flex, Grid, GridItem } from '@chakra-ui/layout';
+import {
+	Box,
+	Button,
+	Card,
+	CardBody,
+	CardHeader,
+	Divider,
+	FormControl,
+	FormLabel,
+	Heading,
+	HStack,
+	IconButton,
+	Input,
+	Select,
+	Stack,
+	Tag,
+	Textarea,
+	useColorModeValue,
+	VStack,
+} from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Category } from '../../models/enums/category.enum';
 import { Status } from '../../models/enums/status.enum';
 import { Course } from '../../models/interfaces/course';
 import { CourseFormData } from '../../models/interfaces/course-form-data';
-import InputComponent from '../../shared/input';
 
 const emptyLesson = { name: '', youtube_url: '' };
 
@@ -25,11 +44,20 @@ const CourseFormComponent = ({ initialData, onSubmit, isLoading }: CourseFormPro
 		lessons: [emptyLesson],
 	});
 
+	const tagColorScheme = {
+		[Status.ACTIVE]: 'green',
+		[Status.INACTIVE]: 'danger',
+	};
+	const cardBg = useColorModeValue('white', 'gray.800');
+	const borderColor = useColorModeValue('gray.200', 'gray.700');
+	const lessonBg = useColorModeValue('gray.50', 'gray.700');
+
 	useEffect(() => {
 		if (initialData) {
 			setFormData({
 				id: initialData.id,
 				name: initialData.name,
+				description: initialData.description,
 				category: initialData.category,
 				status: initialData.status,
 				lessons: initialData.lessons.map((lesson) => ({
@@ -41,7 +69,7 @@ const CourseFormComponent = ({ initialData, onSubmit, isLoading }: CourseFormPro
 		}
 	}, [initialData]);
 
-	const handCourseChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+	const handleFormCourseChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
 		const { name, value } = e.target;
 		setFormData((prevData) => ({
 			...prevData,
@@ -49,7 +77,7 @@ const CourseFormComponent = ({ initialData, onSubmit, isLoading }: CourseFormPro
 		}));
 	};
 
-	const handleLessonChange = (index: number, field: keyof typeof emptyLesson, value: string) => {
+	const handleFormLessonChange = (index: number, field: keyof typeof emptyLesson, value: string) => {
 		const updatedLessons = [...formData.lessons];
 		updatedLessons[index][field] = value;
 		setFormData({ ...formData, lessons: updatedLessons });
@@ -86,133 +114,263 @@ const CourseFormComponent = ({ initialData, onSubmit, isLoading }: CourseFormPro
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<Card>
-				<CardBody>
-					<Stack spacing={6}>
-						<Stack spacing={4}>
-							<InputComponent
-								name='name'
-								label='Course Name'
-								value={formData.name}
-								handleOnChangeValue={handCourseChange}
-								type='text'
-								isRequired
-							/>
+			<Card
+				bg={cardBg}
+				shadow='md'
+				borderRadius='lg'
+				overflow='hidden'
+				borderColor={borderColor}
+				borderWidth='1px'
+			>
+				<CardHeader
+					bg='blue.500'
+					py={4}
+				>
+					<Heading
+						size='md'
+						color='white'
+					>
+						{initialData ? 'Edit Course' : 'Create New Course'}
+					</Heading>
+				</CardHeader>
 
-							<FormControl isRequired>
-								<FormLabel>Category</FormLabel>
-								<Select
-									value={formData.category}
-									onChange={handCourseChange}
-									name='category'
-									placeholder='Select option'
-								>
-									{Object.values(Category).map((category) => (
-										<option
-											key={category}
-											value={category}
-										>
-											{category}
-										</option>
-									))}
-								</Select>
-							</FormControl>
+				<CardBody p={6}>
+					<VStack
+						spacing={8}
+						align='stretch'
+					>
+						<Box>
+							<Heading
+								size='sm'
+								mb={4}
+								color='blue.600'
+							>
+								Course Details
+							</Heading>
 
-							<FormControl isRequired>
-								<FormLabel>Status</FormLabel>
-								<Select
-									value={formData.status}
-									onChange={handCourseChange}
-									name='status'
-									placeholder='Select option'
-								>
-									{Object.values(Status).map((status) => (
-										<option
-											key={status}
-											value={status}
+							<Grid
+								templateColumns={{ base: '1fr', md: '1fr 1fr' }}
+								gap={6}
+							>
+								<GridItem colSpan={{ base: 1, md: 2 }}>
+									<FormControl isRequired>
+										<FormLabel fontWeight='medium'>Course Name</FormLabel>
+										<Input
+											name='name'
+											value={formData.name}
+											onChange={handleFormCourseChange}
+											placeholder='Enter course name'
+											size='md'
+											borderRadius='md'
+											focusBorderColor='blue.400'
+										/>
+									</FormControl>
+								</GridItem>
+
+								<GridItem colSpan={{ base: 1, md: 2 }}>
+									<FormControl>
+										<FormLabel fontWeight='medium'>Description</FormLabel>
+										<Textarea
+											name='description'
+											value={formData.description}
+											onChange={handleFormCourseChange}
+											placeholder='Enter course description'
+											size='md'
+											borderRadius='md'
+											focusBorderColor='blue.400'
+											rows={3}
+											resize='vertical'
+										/>
+									</FormControl>
+								</GridItem>
+
+								<GridItem>
+									<FormControl isRequired>
+										<FormLabel fontWeight='medium'>Category</FormLabel>
+										<Select
+											name='category'
+											value={formData.category}
+											onChange={handleFormCourseChange}
+											borderRadius='md'
+											focusBorderColor='blue.400'
 										>
-											{status}
-										</option>
-									))}
-								</Select>
-							</FormControl>
-						</Stack>
+											{Object.values(Category).map((category) => (
+												<option
+													key={category}
+													value={category}
+												>
+													{category}
+												</option>
+											))}
+										</Select>
+									</FormControl>
+								</GridItem>
+
+								<GridItem>
+									<FormControl isRequired>
+										<FormLabel fontWeight='medium'>Status</FormLabel>
+										<Flex alignItems='center'>
+											<Select
+												name='status'
+												value={formData.status}
+												onChange={handleFormCourseChange}
+												borderRadius='md'
+												focusBorderColor='blue.400'
+												mr={3}
+											>
+												{Object.values(Status).map((status) => (
+													<option
+														key={status}
+														value={status}
+													>
+														{status}
+													</option>
+												))}
+											</Select>
+											<Tag
+												size='md'
+												colorScheme={tagColorScheme[formData.status as Status] || 'gray'}
+												borderRadius='full'
+											>
+												{formData.status}
+											</Tag>
+										</Flex>
+									</FormControl>
+								</GridItem>
+							</Grid>
+						</Box>
 
 						<Divider />
 
 						<Box>
-							<Heading
-								size='md'
-								mb={2}
+							<Flex
+								justify='space-between'
+								align='center'
+								mb={4}
 							>
-								Lessons
-							</Heading>
+								<Heading
+									size='sm'
+									color='blue.600'
+								>
+									Lessons
+								</Heading>
+							</Flex>
 
-							{formData.lessons.map((lesson, index) => (
-								<Box key={index}>
-									<Stack>
-										<InputComponent
-											name={`lesson-${index}-name`}
-											label='Lesson Name'
-											value={lesson.name}
-											handleOnChangeValue={(e) => handleLessonChange(index, 'name', e.target.value)}
-											type='text'
-											isRequired
-										/>
-										<InputComponent
-											name={`lesson-${index}-youtube_url`}
-											label='YouTube URL'
-											value={lesson.youtube_url}
-											handleOnChangeValue={(e) => handleLessonChange(index, 'youtube_url', e.target.value)}
-											type='text'
-											isRequired
-										/>
-										{formData.lessons.length > 1 && (
-											<Box textAlign='right'>
-												<IconButton
-													aria-label='Delete lesson'
-													icon={<DeleteIcon />}
-													colorScheme='red'
-													size='sm'
-													onClick={() => removeLesson(index)}
-												/>
-											</Box>
-										)}
-									</Stack>
-								</Box>
-							))}
-							<Button
-								leftIcon={<AddIcon />}
-								onClick={addLesson}
-								colorScheme='blue'
-								variant='outline'
-								size='sm'
-								my={1}
+							<VStack
+								spacing={4}
+								align='stretch'
 							>
-								Add Lesson
-							</Button>
+								{formData.lessons.map((lesson, index) => (
+									<Card
+										key={index}
+										bg={lessonBg}
+										borderRadius='md'
+										borderWidth='1px'
+										borderColor={borderColor}
+										overflow='hidden'
+									>
+										<CardBody p={4}>
+											<Grid
+												templateColumns={{ base: '1fr', md: '1fr auto' }}
+												gap={4}
+											>
+												<GridItem>
+													<Stack spacing={4}>
+														<FormControl isRequired>
+															<FormLabel
+																fontWeight='medium'
+																fontSize='sm'
+															>
+																Lesson Name
+															</FormLabel>
+															<Input
+																value={lesson.name}
+																onChange={(e) => handleFormLessonChange(index, 'name', e.target.value)}
+																placeholder='Enter lesson name'
+																size='md'
+																borderRadius='md'
+																focusBorderColor='blue.400'
+															/>
+														</FormControl>
+
+														<FormControl isRequired>
+															<FormLabel
+																fontWeight='medium'
+																fontSize='sm'
+															>
+																YouTube URL
+															</FormLabel>
+															<Input
+																value={lesson.youtube_url}
+																onChange={(e) => handleFormLessonChange(index, 'youtube_url', e.target.value)}
+																placeholder='Enter YouTube URL'
+																size='md'
+																borderRadius='md'
+																focusBorderColor='blue.400'
+															/>
+														</FormControl>
+													</Stack>
+												</GridItem>
+
+												<GridItem>
+													{formData.lessons.length > 1 && (
+														<IconButton
+															aria-label='Remove lesson'
+															icon={<DeleteIcon />}
+															colorScheme='red'
+															variant='ghost'
+															size='sm'
+															onClick={() => removeLesson(index)}
+															alignSelf='flex-start'
+															mt={{ base: 0, md: 8 }}
+														/>
+													)}
+												</GridItem>
+											</Grid>
+										</CardBody>
+									</Card>
+								))}
+
+								<Button
+									leftIcon={<AddIcon />}
+									onClick={addLesson}
+									colorScheme='blue'
+									variant='outline'
+									size='md'
+									borderRadius='md'
+									width='full'
+								>
+									Add Lesson
+								</Button>
+							</VStack>
 						</Box>
 
+						<Divider />
+
 						<HStack
-							justifyContent='flex-end'
 							spacing={4}
+							justify='flex-end'
 						>
 							<Button
 								variant='outline'
-								onClick={() => navigate('/')}
+								onClick={() => navigate('/courses')}
+								size='md'
+								borderRadius='md'
 							>
 								Cancel
 							</Button>
 							<Button
 								type='submit'
-								colorScheme='blue'
 								isLoading={isLoading}
 								loadingText='Saving...'
+								size='md'
+								borderRadius='md'
+								colorScheme='blue'
 							>
 								Save
 							</Button>
 						</HStack>
-					</Stack>
+					</VStack>
 				</CardBody>
 			</Card>
 		</form>

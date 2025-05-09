@@ -4,7 +4,7 @@ import { Badge, Button, Card, CardBody, Heading, useColorModeValue } from '@chak
 import { useLocation, useNavigate } from 'react-router';
 import { Status } from '../../models/enums/status.enum';
 import { Course } from '../../models/interfaces/course';
-import Layout from '../../shared/layout';
+import Layout from '../../templates/layout';
 
 const CoursesViewPage = () => {
 	const navigate = useNavigate();

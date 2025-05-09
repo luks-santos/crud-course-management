@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router';
 import useHttp from '../../hooks/utils/useHttp';
 import { Status } from '../../models/enums/status.enum';
 import { Course } from '../../models/interfaces/course';
-import ModalDeleteConfirm from '../../shared/modal-delete-confirm';
+import ModalDeleteConfirm from '../modal-delete-confirm';
 
 interface CourseTableProps {
 	courses: Course[] | null;
