@@ -2,110 +2,44 @@ from typing import Tuple
 from flask import Blueprint, request, jsonify, Response
 from ..services.course_service import CourseService 
 
-bp = Blueprint("courses", __name__, url_prefix="/api/courses")
 
-@bp.route("", methods=["GET"])
-def get_courses() -> Response:
-    courses = CourseService.get_all()
-    result = []
+class CourseRoutes:
+    
+    def __init__(self, course_service: CourseService):
+        self.course_service = course_service
+        self.bp = Blueprint("courses", __name__, url_prefix="/api/courses")
+        self._register_routes()
+    
+    def _register_routes(self):
+        self.bp.route("", methods=["GET"])(self.get_all)
+        self.bp.route("/<int:id>", methods=["GET"])(self.get_by_id)
+        self.bp.route("", methods=["POST"])(self.create)
+        self.bp.route("/<int:id>", methods=["PUT"])(self.update)
+        self.bp.route("/<int:id>", methods=["DELETE"])(self.delete_by_id)
+    
+    def get_all(self) -> Response:
+        return jsonify(self.course_service.get_all())
 
-    for course in courses:
-        course_data = {
-            "id": course.id,
-            "name": course.name,
-            "category": course.category.value,
-            "status": course.status.value,
-            "lessons": [
-                {
-                    "id": lesson.id,
-                    "name": lesson.name,
-                    "youtube_url": lesson.youtube_url,
-                }
-                for lesson in course.lessons
-            ],
-        }
-        result.append(course_data)
+    def get_by_id(self, id: int) -> Response:
+        return jsonify(self.course_service.get_by_id(id))
 
-    return jsonify(result)
+    def create(self) -> Response:
+        try:
+            data = request.get_json()
+            return jsonify(self.course_service.create(data)), 201
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
 
+    def update(self, id: int) -> Response:
+        try:
+            data = request.get_json()
+            return jsonify(self.course_service.update(id, data))
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
 
-@bp.route("/<int:id>", methods=["GET"])
-def get_course(id: int) -> Response:
-    course = CourseService.get_by_id(id)
-
-    course_data = {
-        "id": course.id,
-        "name": course.name,
-        "category": course.category.value,
-        "status": course.status.value,
-        "lessons": [
-            {"id": lesson.id, "name": lesson.name, "youtube_url": lesson.youtube_url}
-            for lesson in course.lessons
-        ],
-    }
-
-    return jsonify(course_data)
-
-
-@bp.route("", methods=["POST"])
-def create_course() -> Tuple[Response, int]:
-    data = request.get_json()
-
-    try:
-        course = CourseService.create(data)
-        response_data = {
-            "id": course.id,
-            "name": course.name,
-            "category": course.category.value,
-            "status": course.status.value,
-            "lessons": [
-                {
-                    "id": lesson.id,
-                    "name": lesson.name,
-                    "youtube_url": lesson.youtube_url,
-                }
-                for lesson in course.lessons
-            ],
-        }
-
-        return jsonify(response_data), 201
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-
-@bp.route("/<int:id>", methods=["PUT"])
-def update_course(id: int) -> Response:
-    data = request.get_json()
-    try:
-        course = CourseService.update(id, data)
-
-        response_data = {
-            "id": course.id,
-            "name": course.name,
-            "category": course.category.value,
-            "status": course.status.value,
-            "lessons": [
-                {
-                    "id": lesson.id,
-                    "name": lesson.name,
-                    "youtube_url": lesson.youtube_url,
-                }
-                for lesson in course.lessons
-            ],
-        }
-
-        return jsonify(response_data)
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-
-@bp.route("/<int:id>", methods=["DELETE"])
-def delete_course(id: int) -> Tuple[Response, int]:
-    try:
-        CourseService.delete(id)
-        return jsonify({"message": "Course deleted"}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
+    def delete_by_id(self, id: int) -> Response:
+        try:
+            self.course_service.delete_by_id(id)
+            return jsonify({"message": "Course deleted"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
