@@ -74,8 +74,8 @@ class CourseService:
         
     
     def update(self, id: int, data: Dict[str, Any]) -> Course:
+        session = self.session_factory()
         try:
-            session = self.session_factory()
             course: Course = session.query(self.course_model).get(id)
             if not course:
                 raise Exception(f"Course with ID {id} not found")
@@ -113,6 +113,7 @@ class CourseService:
                         lesson = existing_lessons[temp_lesson.id]
                         if temp_lesson.name is not None:
                             lesson.name = temp_lesson.name
+
                         if temp_lesson.youtube_url is not None:
                             lesson.youtube_url = temp_lesson.youtube_url
                     else:
@@ -123,7 +124,7 @@ class CourseService:
                         )
                         course.lessons.append(new_lesson)
                         session.add(new_lesson)
-            
+        
             session.commit()
             return course.to_dict()
         except Exception as e:

@@ -1,9 +1,9 @@
 from typing import List
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DateTime, Integer, String, Enum, ForeignKey
+from sqlalchemy import DateTime, Integer, String, Enum, ForeignKey, func
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 import enum
-from datetime import datetime, timezone
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -22,9 +22,9 @@ class Lesson(db.Model):
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    youtube_url: Mapped[str] = mapped_column(String(11), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now(timezone.utc))
-    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    youtube_url: Mapped[str] = mapped_column(String(100), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
     course_id: Mapped[int] = mapped_column(Integer, ForeignKey("courses.id"), nullable=False)
 
     def to_dict(self):
@@ -45,8 +45,8 @@ class Course(db.Model):
     description: Mapped[str] = mapped_column(String, nullable=True)
     category: Mapped[Category] = mapped_column(Enum(Category), nullable=False)
     status: Mapped[Status] = mapped_column(Enum(Status), nullable=False, default=Status.ACTIVE)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now(timezone.utc))
-    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
     lessons: Mapped[List[Lesson]] = relationship(
         "Lesson", backref="course", lazy=True, cascade="all, delete-orphan"
     )
