@@ -31,7 +31,7 @@ const emptyLesson = { name: '', youtube_url: '' };
 
 interface CourseFormProps {
 	initialData?: Course;
-	onSubmit: (data: Course) => Promise<Course>;
+	onSubmit: (data: CourseFormData) => Promise<CourseFormData>;
 	isLoading: boolean;
 }
 
@@ -39,6 +39,7 @@ const CourseFormComponent = ({ initialData, onSubmit, isLoading }: CourseFormPro
 	const navigate = useNavigate();
 	const [formData, setFormData] = useState<CourseFormData>({
 		name: '',
+		description: '',
 		category: Category.BACKEND,
 		status: Status.ACTIVE,
 		lessons: [emptyLesson],
@@ -46,7 +47,7 @@ const CourseFormComponent = ({ initialData, onSubmit, isLoading }: CourseFormPro
 
 	const tagColorScheme = {
 		[Status.ACTIVE]: 'green',
-		[Status.INACTIVE]: 'danger',
+		[Status.INACTIVE]: 'red',
 	};
 	const cardBg = useColorModeValue('white', 'gray.800');
 	const borderColor = useColorModeValue('gray.200', 'gray.700');
@@ -101,7 +102,7 @@ const CourseFormComponent = ({ initialData, onSubmit, isLoading }: CourseFormPro
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const courseData: Course = {
+		const courseData: CourseFormData = {
 			...formData,
 			lessons: formData.lessons.map((lesson) => ({
 				...lesson,
@@ -168,7 +169,7 @@ const CourseFormComponent = ({ initialData, onSubmit, isLoading }: CourseFormPro
 								</GridItem>
 
 								<GridItem colSpan={{ base: 1, md: 2 }}>
-									<FormControl>
+									<FormControl isRequired>
 										<FormLabel fontWeight='medium'>Description</FormLabel>
 										<Textarea
 											name='description'

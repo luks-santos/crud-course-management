@@ -16,6 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useToastNotifier } from '../../hooks/useToastNotifier';
 import useHttp from '../../hooks/utils/useHttp';
 import { Status } from '../../models/enums/status.enum';
 import { Course } from '../../models/interfaces/course';
@@ -32,6 +33,7 @@ const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTable
 	const [courseDeleteId, setCourseDeleteId] = useState<number | null>(null);
 	const { sendRequest, loading } = useHttp<Course>(`${import.meta.env.VITE_API_URL}/courses/${courseDeleteId}`, 'DELETE', null, [], false);
 	const navigate = useNavigate();
+	const { showToast } = useToastNotifier();
 
 	const handleDelete = (courseId: number) => {
 		setCourseDeleteId(courseId);
@@ -44,9 +46,19 @@ const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTable
 				await sendRequest();
 				onClose();
 				setCourseDeleteId(null);
+				showToast({
+					title: 'Course deleted',
+					description: 'The course has been successfully deleted.',
+					status: 'success',
+				});
 				onUpdateTable();
 			} catch (error) {
-				console.error('Error deleting course:', error);
+				showToast({
+					title: 'Error deleting course',
+					description: 'An error occurred while deleting the course. Please try again later.',
+					status: 'error',
+				});
+				throw error;
 			}
 		}
 	};

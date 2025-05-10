@@ -53,7 +53,7 @@ const LessonViewPage = () => {
 			</Flex>
 
 			<Grid
-				templateColumns='3fr 1fr'
+				templateColumns='5fr'
 				gap={6}
 				px={5}
 				py={3}
@@ -62,7 +62,7 @@ const LessonViewPage = () => {
 					<Box
 						bg='black'
 						position='relative'
-						height='80vh'
+						height='60vh'
 						width='100%'
 					>
 						{videoId && (
@@ -77,27 +77,7 @@ const LessonViewPage = () => {
 						)}
 					</Box>
 					<Box mt={4}>
-						<Heading size='lg'>{lesson.name}</Heading>
-					</Box>
-				</GridItem>
-
-				<GridItem>
-					<Box
-						border='1px'
-						borderColor='gray.200'
-						borderRadius='md'
-						p={4}
-					>
-						<Heading
-							size='md'
-							mb={4}
-						>
-							Course Lessons
-						</Heading>
-
-						<Box>
-							<Text>Lorem ipsum, dolor sit amet accusamus </Text>
-						</Box>
+						<Heading size='md'>{lesson.name}</Heading>
 					</Box>
 				</GridItem>
 			</Grid>

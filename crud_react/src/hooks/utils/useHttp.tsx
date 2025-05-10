@@ -6,17 +6,16 @@ interface HttpState<T> {
 	data: T | null;
 	error: string | null;
 }
-
-type HttpAction<T> = { type: 'SEND' } | { type: 'SUCCESS'; responseData: T } | { type: 'ERROR'; errorMessage: string };
+type HttpAction<T> = { type: 'send' } | { type: 'success'; responseData: T } | { type: 'error'; error: string };
 
 const httpReducer = <T,>(state: HttpState<T>, action: HttpAction<T>): HttpState<T> => {
 	switch (action.type) {
-		case 'SEND':
+		case 'send':
 			return { ...state, loading: true, error: null };
-		case 'SUCCESS':
+		case 'success':
 			return { data: action.responseData, error: null, loading: false };
-		case 'ERROR':
-			return { ...state, error: action.errorMessage, loading: false };
+		case 'error':
+			return { ...state, error: action.error, loading: false };
 		default:
 			return state;
 	}
@@ -52,9 +51,8 @@ const useHttp = <T,>(
 
 	const sendRequest = useCallback(
 		async (config?: { url?: string; method?: Method; body?: any }): Promise<T> => {
-			dispatch({ type: 'SEND' });
-
 			try {
+				dispatch({ type: 'send' });
 				const response: AxiosResponse<T> = await axios({
 					url: config?.url || url,
 					method: config?.method || method,
@@ -63,12 +61,10 @@ const useHttp = <T,>(
 						'Content-Type': 'application/json',
 					},
 				});
-
-				dispatch({ type: 'SUCCESS', responseData: response.data });
+				dispatch({ type: 'success', responseData: response.data });
 				return response.data;
 			} catch (error) {
-				let errorMessage = 'Algo deu errado!';
-
+				let errorMessage = 'An error occurred';
 				if (axios.isAxiosError(error)) {
 					errorMessage = error.response?.data?.message || error.message;
 					console.error('Axios error:', error.response?.data || error.message);
@@ -77,7 +73,7 @@ const useHttp = <T,>(
 					console.error('Error:', error.message);
 				}
 
-				dispatch({ type: 'ERROR', errorMessage });
+				dispatch({ type: 'error', error: errorMessage });
 				throw error;
 			}
 		},
