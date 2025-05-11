@@ -1,0 +1,121 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'crud_flask/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'crud_flask/**'
+      - '.github/workflows/backend.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d test_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpq-dev postgresql-client
+
+      - name: Install Python dependencies
+        working-directory: ./crud_flask
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements_test.txt
+
+      # Aguardar o PostgreSQL estar pronto
+      - name: Wait for PostgreSQL
+        run: |
+          for i in $(seq 1 30); do
+            if pg_isready -h localhost -U postgres -d test_db; then
+              echo "PostgreSQL is ready!"
+              break
+            fi
+            echo "Waiting for PostgreSQL... ($i/30)"
+            sleep 1
+          done
+
+      # Executar migrações com variáveis explícitas
+      - name: Run database migrations
+        working-directory: ./crud_flask
+        env:
+          FLASK_APP: crud_flask
+          FLASK_ENV: testing
+          SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@localhost:5432/test_db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        run: |
+          echo "Running migrations with SQLALCHEMY_DATABASE_URI: $SQLALCHEMY_DATABASE_URI"
+          flask db upgrade
+
+      # Executar testes com variáveis explícitas
+      - name: Run tests
+        working-directory: ./crud_flask
+        env:
+          FLASK_APP: crud_flask
+          FLASK_ENV: testing
+          SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@localhost:5432/test_db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        run: |
+          pytest tests/ -v --cov=crud_flask --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./crud_flask/coverage.xml
+          flags: backend
+          name: backend-coverage
+          fail_ci_if_error: false
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        working-directory: ./crud_flask
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install black flake8
+
+      - name: Run Black formatter check
+        working-directory: ./crud_flask
+        run: black --check .
+
+      - name: Run Flake8 linter
+        working-directory: ./crud_flask
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.venv
