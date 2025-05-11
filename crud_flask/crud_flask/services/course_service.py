@@ -1,3 +1,4 @@
+import math
 from typing import Any, Dict, List
 from sqlalchemy.orm import Session
 
@@ -41,6 +42,25 @@ class CourseService:
             return [course.to_dict() for course in courses]
         except Exception as e:
             raise Exception(f"Error fetching all courses: {e}")
+        finally:
+            session.close()
+
+    def get_all_paginated(self, page: int, per_page: int) -> Dict[str, Any]:
+        try:
+            session: Session = self.session_factory()
+            courses: List[Course] = session.query(self.course_model).paginate(page=page, per_page=per_page, error_out=False).items
+            return {
+                'pageIndex': page,
+                'pageSize': per_page,
+                'totalCount': session.query(self.course_model).count(),
+                'totalPages': math.ceil(session.query(self.course_model).count() / per_page),
+                'canPreviousPage': page > 1,
+                'canNextPage': page < math.ceil(session.query(self.course_model).count() / per_page),
+                'data': [course.to_dict() for course in courses],  
+        
+        }
+        except Exception as e:
+            raise Exception(f"Error fetching paginated courses: {e}")
         finally:
             session.close()
 
@@ -142,7 +162,6 @@ class CourseService:
 
             session.delete(course)
             session.commit()
-            session.close()
             return True
         except Exception as e:
             session.rollback()
