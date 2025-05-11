@@ -20,19 +20,23 @@ import { useToastNotifier } from '../../hooks/useToastNotifier';
 import useHttp from '../../hooks/utils/useHttp';
 import { Status } from '../../models/enums/status.enum';
 import { Course } from '../../models/interfaces/course';
+import { Pagination } from '../../models/interfaces/pagination';
 import ModalDeleteConfirm from '../modal-delete-confirm';
+import PaginationComponent from '../pagination';
 
 interface CourseTableProps {
-	courses: Course[] | null;
+	courses: Pagination<Course> | null;
 	isLoading: boolean;
 	onUpdateTable: () => void;
+	goToPage: (page: number) => void;
+	setPageSize: (pageSize: number) => void;
 }
 
-const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTableProps) => {
-	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [courseDeleteId, setCourseDeleteId] = useState<number | null>(null);
-	const { sendRequest, loading } = useHttp<Course>(`${import.meta.env.VITE_API_URL}/courses/${courseDeleteId}`, 'DELETE', null, [], false);
+const CourseTableComponent = ({ courses, isLoading, onUpdateTable, goToPage, setPageSize }: CourseTableProps) => {
 	const navigate = useNavigate();
+	const [courseDeleteId, setCourseDeleteId] = useState<number | null>(null);
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const { sendRequest, loading } = useHttp<Course>(`${import.meta.env.VITE_API_URL}/courses/${courseDeleteId}`, 'DELETE', null, [], false);
 	const { showToast } = useToastNotifier();
 
 	const handleDelete = (courseId: number) => {
@@ -63,7 +67,7 @@ const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTable
 		}
 	};
 
-	if (!courses || courses.length === 0) {
+	if (!courses || courses.data.length === 0) {
 		return (
 			<Flex
 				justify='center'
@@ -101,6 +105,7 @@ const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTable
 			state: { course },
 		});
 	};
+
 	return (
 		<>
 			<TableContainer>
@@ -115,7 +120,7 @@ const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTable
 						</Tr>
 					</Thead>
 					<Tbody>
-						{courses.map((course) => (
+						{courses.data.map((course) => (
 							<Tr key={course.id}>
 								<Td>{course.name}</Td>
 								<Td>
@@ -150,6 +155,15 @@ const CourseTableComponent = ({ courses, isLoading, onUpdateTable }: CourseTable
 						))}
 					</Tbody>
 				</Table>
+				<PaginationComponent
+					pageIndex={courses.pageIndex}
+					pageSize={courses.pageSize}
+					totalPages={courses.totalPages}
+					canPreviousPage={courses.canPreviousPage}
+					canNextPage={courses.canNextPage}
+					goToPage={(page: number) => goToPage(page)}
+					setPageSize={(page) => setPageSize(page)}
+				></PaginationComponent>
 			</TableContainer>
 			<ModalDeleteConfirm
 				isOpen={isOpen}

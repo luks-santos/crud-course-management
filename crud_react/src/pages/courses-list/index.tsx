@@ -1,15 +1,25 @@
 import { AddIcon } from '@chakra-ui/icons';
 import { Box, Button, Card, CardBody, Flex } from '@chakra-ui/react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import CourseTableComponent from '../../components/course-table';
 import { useToastNotifier } from '../../hooks/useToastNotifier';
 import useHttp from '../../hooks/utils/useHttp';
 import { Course } from '../../models/interfaces/course';
+import { Pagination } from '../../models/interfaces/pagination';
 import Layout from '../../templates/layout';
 
 const CoursesListPage = () => {
 	const navigate = useNavigate();
-	const { data: courses, loading, sendRequest } = useHttp<Course[]>(`${import.meta.env.VITE_API_URL}/courses`, 'GET');
+	const [page, setPage] = useState(1);
+	const [pageSize, setPageSize] = useState(5);
+
+	const { data, loading, sendRequest } = useHttp<Pagination<Course>>(
+		`${import.meta.env.VITE_API_URL}/courses/paginated?page=${page}&per_page=${pageSize}`,
+		'GET',
+		null,
+		[page, pageSize]
+	);
 	const { showToast } = useToastNotifier();
 
 	const handleUpdateTable = async () => {
@@ -50,9 +60,11 @@ const CoursesListPage = () => {
 			<Card>
 				<CardBody>
 					<CourseTableComponent
-						courses={courses}
+						courses={data}
 						isLoading={loading}
 						onUpdateTable={handleUpdateTable}
+						goToPage={setPage}
+						setPageSize={setPageSize}
 					/>
 				</CardBody>
 			</Card>
