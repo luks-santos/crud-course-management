@@ -1,5 +1,7 @@
 # Course Management System
 
+[![Backend CI](https://github.com/luks-santos/crud-react-flask/actions/workflows/backend.yml/badge.svg)](https://github.com/luks-santos/crud-react-flask/actions/workflows/backend.yml)
+
 A full-stack course management application built with Flask (backend) and React (frontend).
 
 ## Features
