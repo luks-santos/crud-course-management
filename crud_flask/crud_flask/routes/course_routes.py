@@ -1,15 +1,15 @@
 from typing import Tuple
 from flask import Blueprint, request, jsonify, Response
-from ..services.course_service import CourseService 
+from ..services.course_service import CourseService
 
 
 class CourseRoutes:
-    
+
     def __init__(self, course_service: CourseService):
         self.course_service = course_service
         self.bp = Blueprint("courses", __name__, url_prefix="/api/courses")
         self._register_routes()
-    
+
     def _register_routes(self):
         self.bp.route("", methods=["GET"])(self.get_all)
         self.bp.route("/paginated", methods=["GET"])(self.get_all_paginated)
@@ -17,7 +17,7 @@ class CourseRoutes:
         self.bp.route("", methods=["POST"])(self.create)
         self.bp.route("/<int:id>", methods=["PUT"])(self.update)
         self.bp.route("/<int:id>", methods=["DELETE"])(self.delete_by_id)
-    
+
     def get_all(self) -> Response:
         return jsonify(self.course_service.get_all())
 

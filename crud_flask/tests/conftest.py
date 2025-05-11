@@ -13,11 +13,14 @@ sys.path.insert(0, str(project_root))
 @pytest.fixture
 def app():
     from crud_flask import app
-    app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('TEST_DB_URI', 'sqlite:///:memory:')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = 'test_secret_key'
-    
+
+    app.config["TESTING"] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+        "TEST_DB_URI", "sqlite:///:memory:"
+    )
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SECRET_KEY"] = "test_secret_key"
+
     with app.app_context():
         yield app
 
@@ -30,9 +33,14 @@ def client(app):
 @pytest.fixture(autouse=True)
 def clear_mock_calls():
     from unittest.mock import Mock
-    
+
     yield
-    
+
     for obj in globals().values():
         if isinstance(obj, Mock):
             obj.reset_mock()
+
+@pytest.fixture(autouse=True)
+def app_context(app):
+    with app.app_context():
+        yield
