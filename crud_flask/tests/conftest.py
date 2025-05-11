@@ -1,6 +1,10 @@
 import pytest
 import sys
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -10,8 +14,9 @@ sys.path.insert(0, str(project_root))
 def app():
     from crud_flask import app
     app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('TEST_DB_URI', 'sqlite:///:memory:')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = 'test_secret_key'
     
     with app.app_context():
         yield app
