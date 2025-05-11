@@ -26,18 +26,11 @@ pytest tests/ -v \
     --cov-branch
 
 # Show coverage summary
-echo "Test execution completed!"
-echo "==========================================="
 echo "Coverage Report Summary:"
 coverage report
 
-# Generate badge
-echo "Generating coverage badge..."
-coverage-badge -o coverage.svg
-
 echo "==========================================="
 echo "Coverage HTML report available at: coverage_html/index.html"
-echo "Coverage badge available at: coverage.svg"
 echo "==========================================="
 
 # Optional: Open coverage report in browser (uncomment if desired)
