@@ -12,6 +12,7 @@ class CourseRoutes:
     
     def _register_routes(self):
         self.bp.route("", methods=["GET"])(self.get_all)
+        self.bp.route("/paginated", methods=["GET"])(self.get_all_paginated)
         self.bp.route("/<int:id>", methods=["GET"])(self.get_by_id)
         self.bp.route("", methods=["POST"])(self.create)
         self.bp.route("/<int:id>", methods=["PUT"])(self.update)
@@ -19,6 +20,14 @@ class CourseRoutes:
     
     def get_all(self) -> Response:
         return jsonify(self.course_service.get_all())
+
+    def get_all_paginated(self) -> Response:
+        try:
+            page = int(request.args.get("page", 1))
+            per_page = int(request.args.get("per_page", 10))
+            return jsonify(self.course_service.get_all_paginated(page, per_page))
+        except ValueError:
+            return jsonify({"error": "Invalid pagination parameters"}), 400
 
     def get_by_id(self, id: int) -> Response:
         return jsonify(self.course_service.get_by_id(id))

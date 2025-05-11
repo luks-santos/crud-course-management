@@ -1,3 +1,4 @@
+import math
 from typing import Any, Dict, List
 from sqlalchemy.orm import Session
 
@@ -44,6 +45,25 @@ class CourseService:
         finally:
             session.close()
 
+    def get_all_paginated(self, page: int, per_page: int) -> Dict[str, Any]:
+        try:
+            session: Session = self.session_factory()
+            courses: List[Course] = session.query(self.course_model).paginate(page=page, per_page=per_page, error_out=False).items
+            return {
+                'pageIndex': page,
+                'pageSize': per_page,
+                'totalCount': session.query(self.course_model).count(),
+                'totalPages': math.ceil(session.query(self.course_model).count() / per_page),
+                'canPreviousPage': page > 1,
+                'canNextPage': page < math.ceil(session.query(self.course_model).count() / per_page),
+                'data': [course.to_dict() for course in courses],  
+        
+        }
+        except Exception as e:
+            raise Exception(f"Error fetching paginated courses: {e}")
+        finally:
+            session.close()
+
     def get_by_id(self, id: int) ->  Dict[str, Any]:
         try:
             session: Session = self.session_factory()
@@ -74,8 +94,8 @@ class CourseService:
         
     
     def update(self, id: int, data: Dict[str, Any]) -> Course:
+        session = self.session_factory()
         try:
-            session = self.session_factory()
             course: Course = session.query(self.course_model).get(id)
             if not course:
                 raise Exception(f"Course with ID {id} not found")
@@ -113,6 +133,7 @@ class CourseService:
                         lesson = existing_lessons[temp_lesson.id]
                         if temp_lesson.name is not None:
                             lesson.name = temp_lesson.name
+
                         if temp_lesson.youtube_url is not None:
                             lesson.youtube_url = temp_lesson.youtube_url
                     else:
@@ -123,7 +144,7 @@ class CourseService:
                         )
                         course.lessons.append(new_lesson)
                         session.add(new_lesson)
-            
+        
             session.commit()
             return course.to_dict()
         except Exception as e:
@@ -141,7 +162,6 @@ class CourseService:
 
             session.delete(course)
             session.commit()
-            session.close()
             return True
         except Exception as e:
             session.rollback()

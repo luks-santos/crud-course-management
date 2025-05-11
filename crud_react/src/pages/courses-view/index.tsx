@@ -10,7 +10,7 @@ const CoursesViewPage = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const course = location.state?.course as Course | undefined;
-
+	console.log('course', course);
 	const getStatusColor = (status: Status) => {
 		return status === Status.ACTIVE ? 'green' : 'red';
 	};
@@ -65,7 +65,7 @@ const CoursesViewPage = () => {
 
 			<Grid
 				px={5}
-				templateColumns='3fr 1fr'
+				templateColumns='3fr 2fr'
 				gap={6}
 			>
 				<GridItem>
@@ -73,7 +73,7 @@ const CoursesViewPage = () => {
 						<CardBody>
 							<Heading size='md'>Description</Heading>
 
-							<Text py='2'>Caffè latte is a coffee beverage of Italian origin made with espresso and steamed milk.</Text>
+							<Text py='2'>{course.description}</Text>
 
 							<Flex
 								justify='left'
@@ -86,7 +86,7 @@ const CoursesViewPage = () => {
 									gap={2}
 								>
 									<CalendarIcon />
-									<Text fontSize='sm'>Created at: {new Date(Date.now()).toLocaleString()}</Text>
+									<Text fontSize='sm'>Created at: {new Date(course.created_at).toLocaleString()}</Text>
 								</Box>
 								<Box
 									display='flex'
@@ -119,7 +119,7 @@ const CoursesViewPage = () => {
 									<Text fontSize='sm'>{course.status}</Text>
 									<Text fontSize='sm'>{course.category}</Text>
 									<Text fontSize='sm'>{course.lessons.length}</Text>
-									{/* <Text fontSize='sm'>{course.lessons.length}</Text> */}
+									<Text fontSize='sm'>{new Date(course.updated_at).toLocaleString()}</Text>
 								</GridItem>
 							</Grid>
 						</CardBody>
@@ -150,6 +150,14 @@ const CoursesViewPage = () => {
 										my='2'
 										align='center'
 										px='2'
+										onClick={() => navigate(`/courses/${course.id}/lessons/${lesson.id}`, { state: { lesson } })}
+										_hover={{
+											cursor: 'pointer',
+											bg: useColorModeValue('gray.100', 'gray.700'),
+										}}
+										transition='background-color 0.2s'
+										transitionTimingFunction='ease-in-out'
+										transitionDuration='0.2s'
 									>
 										<Flex
 											align='center'
